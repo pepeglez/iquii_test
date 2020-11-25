@@ -27,7 +27,6 @@ class HomeFragment : Fragment() {
 
     private lateinit var homeViewModel: HomeViewModel
 
-    var baseUrl = "https://www.reddit.com/"
 
     private var recyclerView: RecyclerView? = null
     private var imageList: ArrayList<RedditImage>? = null
@@ -39,74 +38,29 @@ class HomeFragment : Fragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        homeViewModel =
-                ViewModelProvider(this).get(HomeViewModel::class.java)
+
         val root = inflater.inflate(R.layout.fragment_home, container, false)
-        homeViewModel.text.observe(viewLifecycleOwner, Observer {
-        })
+
+        homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
 
         settingInterface(root)
-
         return root
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
     }
 
     fun settingInterface (root: View){
         recyclerView = root.findViewById(R.id.rv_images)
-        gridLayoutManager =
-            GridLayoutManager(context, 3, LinearLayoutManager.VERTICAL, false)
+        gridLayoutManager = GridLayoutManager(context, 3, LinearLayoutManager.VERTICAL, false)
+
+        val adapter = context?.let { ImageAdapter(it) }
+
+        recyclerView?.adapter = adapter
         recyclerView?.layoutManager = gridLayoutManager
         recyclerView?.setHasFixedSize(true)
 
-        imageList = ArrayList()
-        imageList = fillImageList()
-        imageAdapter = context?.let { ImageAdapter(it, imageList!!) }
-        recyclerView?.adapter = imageAdapter
-    }
-
-    fun fillImageList(): ArrayList<RedditImage>{
-
-        var list: ArrayList<RedditImage> = ArrayList()
-
-        list.add(RedditImage(1,"url","Tittle 1" , "Author 1"))
-        list.add(RedditImage(2,"url","Tittle 2" , "Author 2"))
-        list.add(RedditImage(3,"url","Tittle 3" , "Author 3"))
-        list.add(RedditImage(3,"url","Tittle 3" , "Author 3"))
-        list.add(RedditImage(3,"url","Tittle 3" , "Author 3"))
-
-        return list
-    }
-
-
-    fun makeHttpRequest (){
-        val retrofit = Retrofit.Builder()
-            .baseUrl(baseUrl)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val service = retrofit.create(RedditService::class.java)
-
-        val call = service.searchImages("italia")
-        call.enqueue(object : Callback<RedditResponse> {
-            override fun onResponse(call: Call<RedditResponse>, response: Response<RedditResponse>) {
-                if (response.code() == 200) {
-
-                    val redditResponse = response.body()!!
-
-                    Log.v("---Log", "" + redditResponse.data.dist)
-
-                    for( Children in redditResponse.data.children){
-                        Log.v("---Log", Children.data.title)
-                    }
-                }
-            }
-            override fun onFailure(call: Call<RedditResponse>, t: Throwable) {
-                Log.v("---Log","Error")
-
-            }
+        homeViewModel.listImages.observe(viewLifecycleOwner, Observer {images ->
+            Log.d("---Log", "OBSERVER: " + images.size)
+            images.let { adapter?.setList(it) }
         })
     }
+
 }

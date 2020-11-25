@@ -9,8 +9,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.example.iquiitest.MainActivity
 import com.example.iquiitest.R
 import com.example.iquiitest.model.RedditImage
+import com.example.iquiitest.ui.preview.ImagePreviewDialogFragment
 
 class ImageAdapter (var context: Context, var arrayList: ArrayList<RedditImage>) :
     RecyclerView.Adapter<ImageAdapter.ItemHolder>() {
@@ -33,6 +35,11 @@ class ImageAdapter (var context: Context, var arrayList: ArrayList<RedditImage>)
         holder.image.setOnClickListener {
             Log.v("---Log", "" + imageItem.tittle)
 
+            val dialogFragment = ImagePreviewDialogFragment()
+
+            var activity:MainActivity = context as MainActivity
+
+            dialogFragment.show(activity.supportFragmentManager, "Image preview")
         }
     }
 

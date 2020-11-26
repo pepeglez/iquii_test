@@ -13,11 +13,13 @@ import com.example.iquiitest.MainActivity
 import com.example.iquiitest.R
 import com.example.iquiitest.model.RedditImage
 import com.example.iquiitest.ui.preview.ImagePreviewDialogFragment
+import com.squareup.picasso.Picasso
 
 class ImageAdapter internal constructor( var context: Context ) :
     RecyclerView.Adapter<ImageAdapter.ItemHolder>() {
 
     private var adapterList = emptyList<RedditImage>()
+    val picasso = Picasso.get()
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemHolder {
@@ -34,8 +36,17 @@ class ImageAdapter internal constructor( var context: Context ) :
 
         val imageItem: RedditImage = adapterList.get(position)
 
+        if (imageItem.thumbUrl!=null){
+            picasso.load(imageItem.thumbUrl)
+                .placeholder(R.drawable.iquii_ins)
+                .into( holder.image)
+        }else {
+            picasso.load(R.drawable.iquii_ins)
+                .into( holder.image)
+        }
+
         holder.image.setOnClickListener {
-            val dialogFragment = ImagePreviewDialogFragment()
+            val dialogFragment = ImagePreviewDialogFragment(redditImage = imageItem)
             var activity:MainActivity = context as MainActivity
             dialogFragment.show(activity.supportFragmentManager, "Image preview")
         }
@@ -50,3 +61,4 @@ class ImageAdapter internal constructor( var context: Context ) :
         notifyDataSetChanged()
     }
 }
+

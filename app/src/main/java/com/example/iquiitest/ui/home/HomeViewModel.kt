@@ -19,7 +19,6 @@ class HomeViewModel : ViewModel() {
 
     private var _redditImages: MutableLiveData<ArrayList<RedditImage>> = MutableLiveData()
 
-
     init {
         makeHttpRequest()
     }
@@ -50,14 +49,19 @@ class HomeViewModel : ViewModel() {
                     var list: ArrayList<RedditImage> = ArrayList()
                     var id:Int = 0
 
-                    Log.v("---Log", "" + redditResponse.data.dist)
 
                     for( Children in redditResponse.data.children){
-                        Log.v("---Log", Children.data.title)
+                        var url:String? = null
+
+                        if (Children.data.preview!=null){
+                            url = Children.data.preview.images[0].source.url
+                            url = url.replace("amp;", "")
+                        } else null
 
                         list.add(RedditImage(
                             id.inc() ,
-                            "Children.data.preview.images[0].source.url",
+                            if (Children.data.thumbnail!=null) Children.data.thumbnail else null,
+                            url,
                             Children.data.title,
                             Children.data.author))
                     }

@@ -36,7 +36,7 @@ class ImageAdapter internal constructor( var context: Context ) :
 
         val imageItem: RedditImage = adapterList.get(position)
 
-        if (imageItem.thumbUrl!=null){
+        if (imageItem.thumbUrl!=null && imageItem.thumbUrl != "" ){
             picasso.load(imageItem.thumbUrl)
                 .placeholder(R.drawable.iquii_ins)
                 .into( holder.image)

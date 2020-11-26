@@ -1,17 +1,18 @@
 package com.example.iquiitest.ui.home
 
+import android.app.Activity
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.TextView
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.iquiitest.MainActivity
 import com.example.iquiitest.R
 import com.example.iquiitest.adapters.ImageAdapter
 import com.example.iquiitest.api.RedditService
@@ -33,6 +34,13 @@ class HomeFragment : Fragment() {
     private var gridLayoutManager: GridLayoutManager? = null
     private var imageAdapter: ImageAdapter? = null
 
+    private var parentActivity:MainActivity? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -40,6 +48,7 @@ class HomeFragment : Fragment() {
     ): View? {
 
         val root = inflater.inflate(R.layout.fragment_home, container, false)
+        parentActivity = activity as MainActivity
 
         homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
 
@@ -47,19 +56,44 @@ class HomeFragment : Fragment() {
         return root
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.toolbar_menu, menu)
+
+        val searchItem = menu?.findItem(R.id.m_action_search)
+        if (searchItem!=null){
+            val searchView = searchItem.actionView as SearchView
+            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    fetchRedditImages(query!!)
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    fetchRedditImages(newText!!)
+                    return true
+                }
+
+            })
+        }
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
     fun settingInterface (root: View){
         recyclerView = root.findViewById(R.id.rv_images)
         gridLayoutManager = GridLayoutManager(context, 3, LinearLayoutManager.VERTICAL, false)
 
-        val adapter = context?.let { ImageAdapter(it) }
+        imageAdapter = context?.let { ImageAdapter(it) }
 
-        recyclerView?.adapter = adapter
+        recyclerView?.adapter = imageAdapter
         recyclerView?.layoutManager = gridLayoutManager
         recyclerView?.setHasFixedSize(true)
 
-        homeViewModel.listImages.observe(viewLifecycleOwner, Observer {images ->
-            Log.d("---Log", "OBSERVER: " + images.size)
-            images.let { adapter?.setList(it) }
+        fetchRedditImages("italia")
+    }
+
+    fun fetchRedditImages (keyword:String) {
+        homeViewModel.getImages(keyword)?.observe(viewLifecycleOwner, Observer {images ->
+            images.let { imageAdapter?.setList(it) }
         })
     }
 

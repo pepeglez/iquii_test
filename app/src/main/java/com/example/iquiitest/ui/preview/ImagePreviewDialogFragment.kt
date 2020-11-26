@@ -1,22 +1,27 @@
 package com.example.iquiitest.ui.preview
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.example.iquiitest.R
 import com.example.iquiitest.model.RedditImage
+import com.example.iquiitest.utils.OnSwipeTouchListener
+import com.example.iquiitest.utils.ZoomClass
 import com.squareup.picasso.Picasso
 
-class ImagePreviewDialogFragment () : DialogFragment( ) {
+class ImagePreviewDialogFragment () : DialogFragment() {
 
-    private var imgReddit: ImageView? = null
+    private var imgReddit: ZoomClass? = null
     private var tvTittle: TextView? = null
     private var tvAuthor: TextView? = null
     private var redditImage:RedditImage? = null
@@ -51,6 +56,7 @@ class ImagePreviewDialogFragment () : DialogFragment( ) {
         dismiss()
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     fun settingInterface (view:View){
         var picasso = Picasso.get()
         imgReddit = view.findViewById(R.id.imgLargePreview)
@@ -70,6 +76,11 @@ class ImagePreviewDialogFragment () : DialogFragment( ) {
             picasso.load(R.drawable.iquii_ins)
                 .into( imgReddit )
         }
+
+        imgReddit?.listenerDown = {
+            dismiss()
+        }
+
     }
 
 

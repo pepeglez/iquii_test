@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Matrix
 import android.graphics.PointF
 import android.util.AttributeSet
+import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
@@ -34,6 +35,13 @@ class ZoomClass : AppCompatImageView, View.OnTouchListener,
     private var mLast = PointF()
     private var mStart = PointF()
 
+    var fittedToScreen = true
+
+    private val SWIPE_THRESHOLD = 100
+    private val SWIPE_VELOCITY_THRESHOLD = 100
+
+    var listenerDown: (()->Unit)? = null
+
     constructor(context: Context) : super(context) {
         sharedConstructing(context)
     }
@@ -59,6 +67,7 @@ class ZoomClass : AppCompatImageView, View.OnTouchListener,
     private inner class ScaleListener : ScaleGestureDetector.SimpleOnScaleGestureListener() {
         override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
             mode = ZOOM
+            fittedToScreen = false
             return true
         }
 
@@ -109,6 +118,8 @@ class ZoomClass : AppCompatImageView, View.OnTouchListener,
         origWidth = viewWidth - 2 * redundantXSpace
         origHeight = viewHeight - 2 * redundantYSpace
         imageMatrix = mMatrix
+
+        fittedToScreen = true
     }
 
     fun fixTranslation() {
@@ -201,8 +212,35 @@ class ZoomClass : AppCompatImageView, View.OnTouchListener,
     }
 
     override fun onLongPress(motionEvent: MotionEvent) {}
+
     override fun onFling(motionEvent: MotionEvent, motionEvent1: MotionEvent, v: Float, v1: Float): Boolean {
-        return false
+        val result = false
+
+        if (fittedToScreen)
+        try {
+            val diffY = motionEvent1.y - motionEvent.y
+            val diffX = motionEvent1.x - motionEvent.x
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(v) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (diffX > 0) {
+                        //onSwipeRight()
+                    } else {
+                        //onSwipeLeft()
+                    }
+                }
+            } else {
+                if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(v1) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (diffY > 0) {
+                        listenerDown?.invoke()
+                    } else {
+                        listenerDown?.invoke()
+                    }
+                }
+            }
+        } catch (exception: Exception) {
+            exception.printStackTrace()
+        }
+        return result
     }
 
     /*

@@ -17,22 +17,17 @@ class HomeViewModel : ViewModel() {
 
     var baseUrl = "https://www.reddit.com/"
 
-    private var _redditImages: MutableLiveData<ArrayList<RedditImage>> = MutableLiveData()
+    var _imagesList : MutableLiveData<ArrayList<RedditImage>>? = null
 
-    init {
-        makeHttpRequest()
+    fun getImages(keyword: String) : LiveData<ArrayList<RedditImage>>? {
+        _imagesList = makeHttpRequest(keyword)
+        return _imagesList
     }
 
-    internal var listImages:MutableLiveData<ArrayList<RedditImage>>
-        get() { return _redditImages}
-        set(value) {_redditImages = value}
+    private fun makeHttpRequest (keyword:String) : MutableLiveData<ArrayList<RedditImage>> {
 
-    fun dame() : MutableLiveData<ArrayList<RedditImage>>{
+        val ldList = MutableLiveData<ArrayList<RedditImage>>()
 
-        return _redditImages
-    }
-
-    private fun makeHttpRequest (){
         val retrofit = Retrofit.Builder()
             .baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create())
@@ -40,7 +35,7 @@ class HomeViewModel : ViewModel() {
 
         val service = retrofit.create(RedditService::class.java)
 
-        val call = service.searchImages("italia")
+        val call = service.searchImages(keyword)
         call.enqueue(object : Callback<RedditResponse> {
             override fun onResponse(call: Call<RedditResponse>, response: Response<RedditResponse>) {
                 if (response.code() == 200) {
@@ -49,6 +44,7 @@ class HomeViewModel : ViewModel() {
                     var list: ArrayList<RedditImage> = ArrayList()
                     var id:Int = 0
 
+                    Log.v("---Log","cant: " + redditResponse.data.dist)
 
                     for( Children in redditResponse.data.children){
                         var url:String? = null
@@ -66,12 +62,13 @@ class HomeViewModel : ViewModel() {
                             Children.data.author))
                     }
 
-                    listImages.value = list
+                    ldList.value = list
                 }
             }
             override fun onFailure(call: Call<RedditResponse>, t: Throwable) {
                 Log.v("---Log","Error")
             }
         })
+        return ldList
     }
 }

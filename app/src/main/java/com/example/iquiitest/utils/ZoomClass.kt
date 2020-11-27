@@ -41,6 +41,10 @@ class ZoomClass : AppCompatImageView, View.OnTouchListener,
     private val SWIPE_VELOCITY_THRESHOLD = 100
 
     var listenerDown: (()->Unit)? = null
+    var listenerRight: (()->Unit)? = null
+    var listenerLeft: (()->Unit)? = null
+
+
 
     constructor(context: Context) : super(context) {
         sharedConstructing(context)
@@ -224,7 +228,9 @@ class ZoomClass : AppCompatImageView, View.OnTouchListener,
                 if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(v) > SWIPE_VELOCITY_THRESHOLD) {
                     if (diffX > 0) {
                         //onSwipeRight()
+                        listenerRight?.invoke()
                     } else {
+                        listenerLeft?.invoke()
                         //onSwipeLeft()
                     }
                 }

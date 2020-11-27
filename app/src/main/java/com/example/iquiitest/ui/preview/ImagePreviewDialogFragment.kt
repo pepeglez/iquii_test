@@ -1,20 +1,22 @@
 package com.example.iquiitest.ui.preview
 
+import android.animation.AnimatorInflater
+import android.animation.AnimatorSet
 import android.annotation.SuppressLint
 import android.app.Application
 import android.app.Dialog
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
+import com.example.iquiitest.MainActivity
 import com.example.iquiitest.R
 import com.example.iquiitest.data.RedditImage
 import com.example.iquiitest.repo.RedditImageRepo
@@ -29,12 +31,18 @@ class ImagePreviewDialogFragment () : DialogFragment() {
     private var tvAuthor: TextView? = null
     private var bAddFav: Button? = null
     private var redditImageRepo: RedditImageRepo? = null
+    private var previewList = emptyList<RedditImage>()
+    private var picasso = Picasso.get()
+    private var position = 0
+
 
     private var redditImage:RedditImage? = null
 
-    constructor (redditImage:RedditImage, application: Application) : this() {
-        this.redditImage = redditImage
+    constructor (position:Int, application: Application, listImages:List<RedditImage>) : this() {
+        this.redditImage = listImages.get(position)
         this.redditImageRepo = RedditImageRepo(application)
+        this.previewList = listImages
+        this.position = position
     }
 
     override fun onCreateView(
@@ -65,12 +73,16 @@ class ImagePreviewDialogFragment () : DialogFragment() {
 
     @SuppressLint("ClickableViewAccessibility")
     fun settingInterface (view:View){
-        var picasso = Picasso.get()
         imgReddit = view.findViewById(R.id.imgLargePreview)
         tvTittle = view.findViewById(R.id.tv_title)
         tvAuthor = view.findViewById(R.id.tv_author)
         bAddFav = view.findViewById(R.id.b_add_fav)
 
+        settingGestures()
+        fillInterface(redditImage!!)
+    }
+
+    private fun fillInterface (redditImage: RedditImage){
         tvTittle?.text = redditImage?.tittle
         tvAuthor?.text = redditImage?.author
 
@@ -83,17 +95,63 @@ class ImagePreviewDialogFragment () : DialogFragment() {
                 .into( imgReddit )
         }
 
-        imgReddit?.listenerDown = {
-            dismiss()
-        }
-
         if (redditImage?.fav!!){
             bAddFav?.visibility = View.GONE
         }else
+            bAddFav?.visibility = View.VISIBLE
             bAddFav?.setOnClickListener {
                 runBlocking { redditImageRepo?.addToFav(redditImage!!) }
                 bAddFav?.visibility = View.GONE
             }
+    }
+
+    private fun settingGestures(){
+
+        imgReddit?.listenerDown = {
+            dismiss()
+        }
+        //Swipe LEFT
+        imgReddit?.listenerLeft = {
+            if (position < previewList.size-1){
+                position += 1
+                animateLeft()
+                Handler().postDelayed({
+                    fillInterface(previewList.get(position))
+                }, 350)
+            }
+        }
+
+        //Swipe RIGHT
+        imgReddit?.listenerRight = {
+            if (position > 0 ){
+                position -= 1
+                animateRight()
+                Handler().postDelayed({
+                    fillInterface(previewList.get(position))
+                }, 350)
+            }
+        }
+
+    }
+
+    private fun animateLeft(){
+        val outAnimation = AnimatorInflater.loadAnimator(context, R.animator.slide_left) as AnimatorSet
+        outAnimation.setTarget(imgReddit)
+        val inAnimation = AnimatorInflater.loadAnimator(context, R.animator.slide_left_in) as AnimatorSet
+        inAnimation.setTarget(imgReddit)
+        val bothAnimatorSet = AnimatorSet()
+        bothAnimatorSet.playSequentially(outAnimation, inAnimation)
+        bothAnimatorSet.start()
+    }
+
+    private fun animateRight(){
+        val outAnimation = AnimatorInflater.loadAnimator(context, R.animator.slide_right) as AnimatorSet
+        outAnimation.setTarget(imgReddit)
+        val inAnimation = AnimatorInflater.loadAnimator(context, R.animator.slide_right_in) as AnimatorSet
+        inAnimation.setTarget(imgReddit)
+        val bothAnimatorSet = AnimatorSet()
+        bothAnimatorSet.playSequentially(outAnimation, inAnimation)
+        bothAnimatorSet.start()
     }
 
 }

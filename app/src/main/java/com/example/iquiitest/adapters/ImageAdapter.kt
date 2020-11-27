@@ -50,7 +50,7 @@ class ImageAdapter internal constructor( var context: Context, var application: 
         holder.image.setOnClickListener {
 
             holder.image.hideKeyboard()
-            val dialogFragment = ImagePreviewDialogFragment(redditImage = imageItem, application = application)
+            val dialogFragment = ImagePreviewDialogFragment(position = position, application = application , listImages = adapterList)
             var activity:MainActivity = context as MainActivity
             dialogFragment.show(activity.supportFragmentManager, "Image preview")
         }

@@ -51,7 +51,6 @@ class ImageAdapter internal constructor( var context: Context, var application: 
             val dialogFragment = ImagePreviewDialogFragment(redditImage = imageItem, application = application)
             var activity:MainActivity = context as MainActivity
             dialogFragment.show(activity.supportFragmentManager, "Image preview")
-
         }
     }
 

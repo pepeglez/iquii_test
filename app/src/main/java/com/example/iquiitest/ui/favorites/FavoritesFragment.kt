@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.iquiitest.InfoDialogFragment
 import com.example.iquiitest.R
 import com.example.iquiitest.adapters.ImageAdapter
 
@@ -58,6 +59,17 @@ class FavoritesFragment : Fragment() {
         searchItem.setVisible(false)
 
         super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.m_action_info -> {
+
+                InfoDialogFragment().show(activity?.supportFragmentManager!!, "Info dialog")
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     fun settingInterface (root: View){

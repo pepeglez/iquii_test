@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.iquiitest.InfoDialogFragment
 import com.example.iquiitest.MainActivity
 import com.example.iquiitest.R
 import com.example.iquiitest.adapters.ImageAdapter
@@ -69,7 +70,6 @@ class HomeFragment : Fragment() {
                     fetchRedditImages(query!!)
                     return true
                 }
-
                 override fun onQueryTextChange(newText: String?): Boolean {
                     llWelcome?.visibility = View.GONE
 
@@ -82,7 +82,18 @@ class HomeFragment : Fragment() {
         super.onCreateOptionsMenu(menu, inflater)
     }
 
-    fun settingInterface (root: View){
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.m_action_info -> {
+
+                InfoDialogFragment().show(activity?.supportFragmentManager!!, "Info dialog")
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+            fun settingInterface (root: View){
         recyclerView = root.findViewById(R.id.rv_images)
         gridLayoutManager = GridLayoutManager(context, 3, LinearLayoutManager.VERTICAL, false)
         llWelcome = root.findViewById(R.id.ll_welcome)

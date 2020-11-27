@@ -1,7 +1,11 @@
 package com.example.iquiitest.ui.home
 
+import android.content.Context
 import android.os.Bundle
 import android.view.*
+import android.view.inputmethod.InputMethodManager
+import android.widget.Button
+import android.widget.LinearLayout
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -21,6 +25,11 @@ class HomeFragment : Fragment() {
     private var recyclerView: RecyclerView? = null
     private var gridLayoutManager: GridLayoutManager? = null
     private var imageAdapter: ImageAdapter? = null
+    private var llWelcome: LinearLayout? = null
+    private var llNoResults: LinearLayout? = null
+    private var bSearch: Button? = null
+    private var searchItem: MenuItem? = null
+    private var searchView: SearchView? = null
 
     private var parentActivity:MainActivity? = null
 
@@ -47,16 +56,19 @@ class HomeFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.toolbar_menu, menu)
 
-        val searchItem = menu?.findItem(R.id.m_action_search)
+        searchItem = menu?.findItem(R.id.m_action_search)
+        searchItem?.expandActionView()
         if (searchItem!=null){
-            val searchView = searchItem.actionView as SearchView
-            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+            searchView = searchItem?.actionView as SearchView
+            searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     fetchRedditImages(query!!)
                     return true
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
+                    llWelcome?.visibility = View.GONE
+
                     fetchRedditImages(newText!!)
                     return true
                 }
@@ -69,6 +81,9 @@ class HomeFragment : Fragment() {
     fun settingInterface (root: View){
         recyclerView = root.findViewById(R.id.rv_images)
         gridLayoutManager = GridLayoutManager(context, 3, LinearLayoutManager.VERTICAL, false)
+        llWelcome = root.findViewById(R.id.ll_welcome)
+        llNoResults = root.findViewById(R.id.ll_empty)
+        bSearch = root.findViewById(R.id.b_search)
 
         imageAdapter = context?.let { ImageAdapter(it) }
 
@@ -76,14 +91,26 @@ class HomeFragment : Fragment() {
         recyclerView?.layoutManager = gridLayoutManager
         recyclerView?.setHasFixedSize(true)
 
-        fetchRedditImages("")
+        bSearch?.setOnClickListener {
+            searchView?.setIconifiedByDefault(false)
+            searchView?.requestFocus()
+            bSearch?.showKeyboard()
+        }
     }
 
     fun fetchRedditImages (keyword:String) {
-
         homeViewModel.getImages(keyword)?.observe(viewLifecycleOwner, Observer {images ->
+            if (images.isNullOrEmpty())
+                llNoResults?.visibility = View.VISIBLE
+            else
+                llNoResults?.visibility = View.INVISIBLE
             images.let { imageAdapter?.setList(it) }
         })
+    }
+
+    private fun View.showKeyboard() {
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
     }
 
 }

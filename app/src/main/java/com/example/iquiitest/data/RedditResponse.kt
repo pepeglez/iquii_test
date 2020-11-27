@@ -1,4 +1,4 @@
-package com.example.iquiitest.model
+package com.example.iquiitest.data
 
 
 import com.google.gson.annotations.SerializedName

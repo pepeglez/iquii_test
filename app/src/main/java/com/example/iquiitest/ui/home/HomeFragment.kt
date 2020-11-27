@@ -1,10 +1,7 @@
 package com.example.iquiitest.ui.home
 
-import android.app.Activity
 import android.os.Bundle
-import android.util.Log
 import android.view.*
-import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -15,14 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.iquiitest.MainActivity
 import com.example.iquiitest.R
 import com.example.iquiitest.adapters.ImageAdapter
-import com.example.iquiitest.api.RedditService
-import com.example.iquiitest.model.RedditImage
-import com.example.iquiitest.model.RedditResponse
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class HomeFragment : Fragment() {
 
@@ -30,7 +19,6 @@ class HomeFragment : Fragment() {
 
 
     private var recyclerView: RecyclerView? = null
-    private var imageList: ArrayList<RedditImage>? = null
     private var gridLayoutManager: GridLayoutManager? = null
     private var imageAdapter: ImageAdapter? = null
 
@@ -88,10 +76,11 @@ class HomeFragment : Fragment() {
         recyclerView?.layoutManager = gridLayoutManager
         recyclerView?.setHasFixedSize(true)
 
-        fetchRedditImages("italia")
+        fetchRedditImages("")
     }
 
     fun fetchRedditImages (keyword:String) {
+
         homeViewModel.getImages(keyword)?.observe(viewLifecycleOwner, Observer {images ->
             images.let { imageAdapter?.setList(it) }
         })

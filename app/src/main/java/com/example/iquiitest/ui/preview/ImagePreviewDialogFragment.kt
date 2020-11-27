@@ -14,8 +14,7 @@ import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.example.iquiitest.R
-import com.example.iquiitest.model.RedditImage
-import com.example.iquiitest.utils.OnSwipeTouchListener
+import com.example.iquiitest.data.RedditImage
 import com.example.iquiitest.utils.ZoomClass
 import com.squareup.picasso.Picasso
 

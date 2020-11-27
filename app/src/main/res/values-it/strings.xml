@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">IQUII Test</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifiche</string>
+    <string name="title_search">Ricerca</string>
+    <string name="title_fav">Preferiti</string>
+    <string name="welcome">Benvenuto(a)</string>
+    <string name="welcome_body">Questa è un\'app TEST per candidarsi a IQUII \n Fai una ricerca per iniziare</string>
+    <string name="click">Clicca qui!</string>
+    <string name="no_results">Nessun risultato</string>
+    <string name="no_fav">Non hai trovato niente di speciale? \n Aggiungi immagini ai preferiti per vederle qui più tardi</string>
+    <string name="add_fav">Aggiungi ai preferiti</string>
+    <string name="developed_by">Sviluppato da:</string>
+    <string name="contact">Contattare</string>
+</resources>

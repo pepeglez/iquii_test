@@ -89,12 +89,11 @@ class ImagePreviewDialogFragment () : DialogFragment() {
 
         if (redditImage?.fav!!){
             bAddFav?.visibility = View.GONE
-
+        }else
             bAddFav?.setOnClickListener {
                 runBlocking { redditImageRepo?.addToFav(redditImage!!) }
                 bAddFav?.visibility = View.GONE
             }
-        }
     }
 
 }

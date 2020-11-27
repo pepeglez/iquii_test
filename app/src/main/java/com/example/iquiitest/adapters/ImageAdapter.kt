@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -48,6 +49,7 @@ class ImageAdapter internal constructor( var context: Context, var application: 
 
         holder.image.setOnClickListener {
 
+            holder.image.hideKeyboard()
             val dialogFragment = ImagePreviewDialogFragment(redditImage = imageItem, application = application)
             var activity:MainActivity = context as MainActivity
             dialogFragment.show(activity.supportFragmentManager, "Image preview")
@@ -61,6 +63,11 @@ class ImageAdapter internal constructor( var context: Context, var application: 
     internal fun setList(list: List<RedditImage>) {
         this.adapterList = list
         notifyDataSetChanged()
+    }
+
+    private fun View.hideKeyboard() {
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
     }
 }
 

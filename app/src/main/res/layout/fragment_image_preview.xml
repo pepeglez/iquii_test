@@ -41,6 +41,18 @@
             android:textSize="16sp"
             android:textStyle="bold"/>
 
+        <Button
+            android:id="@+id/b_add_fav"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:background="@color/white"
+            android:backgroundTint="@color/white"
+            android:textColor="@color/red"
+            android:text="@string/add_fav"
+            android:textSize="10sp"
+            android:drawableLeft="@mipmap/img_fav_small"
+            />
+
     </LinearLayout>
 
 </RelativeLayout>

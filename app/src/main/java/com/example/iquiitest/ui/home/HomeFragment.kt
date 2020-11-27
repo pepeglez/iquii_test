@@ -1,5 +1,6 @@
 package com.example.iquiitest.ui.home
 
+import android.app.Application
 import android.content.Context
 import android.os.Bundle
 import android.view.*
@@ -30,6 +31,7 @@ class HomeFragment : Fragment() {
     private var bSearch: Button? = null
     private var searchItem: MenuItem? = null
     private var searchView: SearchView? = null
+    private var appCtx: Application? = null
 
     private var parentActivity:MainActivity? = null
 
@@ -48,6 +50,8 @@ class HomeFragment : Fragment() {
         parentActivity = activity as MainActivity
 
         homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
+
+        appCtx = requireActivity()!!.application
 
         settingInterface(root)
         return root
@@ -85,7 +89,7 @@ class HomeFragment : Fragment() {
         llNoResults = root.findViewById(R.id.ll_empty)
         bSearch = root.findViewById(R.id.b_search)
 
-        imageAdapter = context?.let { ImageAdapter(it) }
+        imageAdapter = context?.let { ImageAdapter(it , appCtx!!)  }
 
         recyclerView?.adapter = imageAdapter
         recyclerView?.layoutManager = gridLayoutManager

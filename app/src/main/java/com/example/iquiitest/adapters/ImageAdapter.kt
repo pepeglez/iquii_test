@@ -1,5 +1,6 @@
 package com.example.iquiitest.adapters
 
+import android.app.Application
 import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,7 +16,7 @@ import com.example.iquiitest.data.RedditImage
 import com.example.iquiitest.ui.preview.ImagePreviewDialogFragment
 import com.squareup.picasso.Picasso
 
-class ImageAdapter internal constructor( var context: Context ) :
+class ImageAdapter internal constructor( var context: Context, var application: Application ) :
     RecyclerView.Adapter<ImageAdapter.ItemHolder>() {
 
     private var adapterList = emptyList<RedditImage>()
@@ -47,7 +48,7 @@ class ImageAdapter internal constructor( var context: Context ) :
 
         holder.image.setOnClickListener {
 
-            val dialogFragment = ImagePreviewDialogFragment(redditImage = imageItem)
+            val dialogFragment = ImagePreviewDialogFragment(redditImage = imageItem, application = application)
             var activity:MainActivity = context as MainActivity
             dialogFragment.show(activity.supportFragmentManager, "Image preview")
 

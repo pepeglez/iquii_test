@@ -14,4 +14,5 @@ class RedditImage (
     var author:String?,
     var url:String?,
     var thumbnail:String?,
-    var keyword:String?)
+    var keyword:String?,
+    var fav:Boolean?)

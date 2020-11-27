@@ -6,7 +6,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = arrayOf(RedditImage::class), version = 2, exportSchema = false)
+@Database(entities = arrayOf(RedditImage::class), version = 3, exportSchema = false)
 public abstract class DatabaseService : RoomDatabase() {
 
     abstract fun redditImageDAO(): RedditImageDAO
@@ -25,7 +25,7 @@ public abstract class DatabaseService : RoomDatabase() {
                     context.applicationContext,
                     DatabaseService::class.java,
                     "iquii_database"
-                ).build()
+                ).fallbackToDestructiveMigration().build()
                 INSTANCE = instance
                 return instance
             }

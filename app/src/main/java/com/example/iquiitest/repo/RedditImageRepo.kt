@@ -2,6 +2,7 @@ package com.example.iquiitest.repo
 
 import android.app.Application
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.iquiitest.api.RedditService
 import com.example.iquiitest.data.DatabaseService
@@ -29,10 +30,17 @@ class RedditImageRepo (application: Application) {
 
 
     suspend fun getImages (keyword: String) : MutableLiveData<List<RedditImage>> {
-
         return getRemoteImages (keyword)
     }
 
+    suspend fun addToFav (redditImage: RedditImage)  {
+        runBlocking { setFav (redditImage.id, 1) }
+    }
+
+
+    suspend fun getFavImages () : LiveData<List<RedditImage>> {
+        return getFavImagesFromDB ()
+    }
 
     private fun getRemoteImages (keyword:String) : MutableLiveData<List<RedditImage>> {
 
@@ -61,10 +69,13 @@ class RedditImageRepo (application: Application) {
                             Children.data.author,
                             url,
                             if (Children.data.thumbnail!=null) Children.data.thumbnail else null,
-                            keyword
+                            keyword,
+                            false
                         )
+                        var insertedId:Long = 0
+                        runBlocking { insertedId = insert(modelImage) }
+                        modelImage.id = insertedId
                         list.add(modelImage)
-                        runBlocking { insert(modelImage, keyword) }
                     }
                     ldList.value = list
                 }else{
@@ -80,7 +91,7 @@ class RedditImageRepo (application: Application) {
     }
 
 
-    suspend fun getDBImages(keyword: String): MutableLiveData<List<RedditImage>> {
+    private suspend fun getDBImages(keyword: String): MutableLiveData<List<RedditImage>> {
 
         val ldList = MutableLiveData<List<RedditImage>>()
         var list: List<RedditImage>? = ArrayList()
@@ -88,11 +99,19 @@ class RedditImageRepo (application: Application) {
         return ldList
     }
 
-    suspend fun insert(image: RedditImage, keyword: String) {
-        localRepo.insert(image)
+    private suspend fun getFavImagesFromDB(): LiveData<List<RedditImage>> {
+        return localRepo.getFavImages()
     }
 
-    suspend fun deleteImages( keyword: String) {
+    private suspend fun setFav(id:Long, fav:Int) {
+        localRepo.setFavToImage(id,fav)
+    }
+
+    private suspend fun insert(image: RedditImage): Long {
+        return localRepo.insert(image)
+    }
+
+    private suspend fun deleteImages( keyword: String) {
         localRepo.deleteByKeyword(keyword)
     }
 

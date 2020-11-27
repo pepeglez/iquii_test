@@ -1,6 +1,7 @@
 package com.example.iquiitest.ui.preview
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
@@ -8,6 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -15,18 +17,24 @@ import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.example.iquiitest.R
 import com.example.iquiitest.data.RedditImage
+import com.example.iquiitest.repo.RedditImageRepo
 import com.example.iquiitest.utils.ZoomClass
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.runBlocking
 
 class ImagePreviewDialogFragment () : DialogFragment() {
 
     private var imgReddit: ZoomClass? = null
     private var tvTittle: TextView? = null
     private var tvAuthor: TextView? = null
+    private var bAddFav: Button? = null
+    private var redditImageRepo: RedditImageRepo? = null
+
     private var redditImage:RedditImage? = null
 
-    constructor (redditImage:RedditImage) : this() {
+    constructor (redditImage:RedditImage, application: Application) : this() {
         this.redditImage = redditImage
+        this.redditImageRepo = RedditImageRepo(application)
     }
 
     override fun onCreateView(
@@ -61,11 +69,10 @@ class ImagePreviewDialogFragment () : DialogFragment() {
         imgReddit = view.findViewById(R.id.imgLargePreview)
         tvTittle = view.findViewById(R.id.tv_title)
         tvAuthor = view.findViewById(R.id.tv_author)
+        bAddFav = view.findViewById(R.id.b_add_fav)
 
         tvTittle?.text = redditImage?.tittle
         tvAuthor?.text = redditImage?.author
-
-
 
         if (redditImage?.url!=null){
             picasso.load(redditImage?.url)
@@ -80,7 +87,14 @@ class ImagePreviewDialogFragment () : DialogFragment() {
             dismiss()
         }
 
-    }
+        if (redditImage?.fav!!){
+            bAddFav?.visibility = View.GONE
 
+            bAddFav?.setOnClickListener {
+                runBlocking { redditImageRepo?.addToFav(redditImage!!) }
+                bAddFav?.visibility = View.GONE
+            }
+        }
+    }
 
 }
